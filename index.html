@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOEIC Challenge: 50 Từ Vựng Cốt Lõi</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--border);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 28px;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: var(--text);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        p.description {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: white;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--text);
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+
+        .btn-check {
+            background-color: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+
+        .btn-check:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        @media (max-width: 600px) {
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+
+        /* Styling for correct/incorrect inputs */
+        .correct-item {
+            background-color: #d1fae5 !important;
+            border-color: #10b981 !important;
+            color: #065f46 !important;
+        }
+
+        .incorrect-item {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+
+        /* Part 1 styles */
+        .question-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            .game-container {
+                padding: 20px;
+            }
+        }
+
+        .option-label {
+            background: white;
+            border: 2px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .option-label:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        input[type="radio"] {
+            transform: scale(1.2);
+        }
+
+        /* Part 2 styles */
+        .matching-row {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 12px;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .matching-word {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        /* Part 3 Fill in the blank */
+        .blank-sentence {
+            font-size: 15px;
+            margin-bottom: 15px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            line-height: 2;
+        }
+
+        .inline-select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 2px solid var(--primary);
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin: 0 5px;
+            display: inline-block;
+            width: auto;
+        }
+
+        /* Part 4 Recall */
+        .recall-row {
+            margin-bottom: 15px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .recall-vietnamese {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .recall-hint {
+            font-family: monospace;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        /* Results Screen */
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: var(--shadow);
+        }
+
+        .score-circle span {
+            font-size: 14px;
+            font-weight: normal;
+            opacity: 0.9;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .action-buttons {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #certificate-canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="progress-bar-container" id="progress-container" style="display: none;">
+        <div class="progress-bar" id="game-progress"></div>
+    </div>
+
+    <!-- SCREEN 1: START SCREEN -->
+    <div class="screen active" id="screen-start">
+        <h1>🎯 TOEIC VOCABULARY CANVAS</h1>
+        <p class="description">Chào mừng bạn đến với ứng dụng ôn tập 50 từ vựng TOEIC cốt lõi. Hãy hoàn thành hệ thống 4 phần thử thách trong thời gian tối ưu nhất!</p>
+        
+        <div class="input-group">
+            <label for="student-name">Nhập Họ và Tên của bạn:</label>
+            <input type="text" id="student-name" placeholder="Ví dụ: Nguyễn Văn A" autocomplete="off">
+        </div>
+        
+        <button class="btn" onclick="startGame()">Bắt Đầu Ôn Tập 🚀</button>
+    </div>
+
+    <!-- SCREEN 2: PART 1 -->
+    <div class="screen" id="screen-part1">
+        <h2>📝 PHẦN 1: TRẮC NGHIỆM NHANH (1 - 10)</h2>
+        <div id="part1-questions"></div>
+        <div class="btn-group">
+            <button class="btn btn-check" onclick="checkPart(1)">🔍 Kiểm tra đúng/sai</button>
+            <button class="btn" onclick="nextPart(2)">Tiếp Theo: Phần 2 ➡️</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: PART 2 -->
+    <div class="screen" id="screen-part2">
+        <h2>📝 PHẦN 2: NỐI TỪ KÉP (11 - 20)</h2>
+        <p style="margin-bottom: 15px; color: var(--text-muted);">Hãy chọn nghĩa tiếng Việt chính xác cho các từ dưới đây:</p>
+        <div id="part2-questions"></div>
+        <div class="btn-group">
+            <button class="btn btn-check" onclick="checkPart(2)">🔍 Kiểm tra đúng/sai</button>
+            <button class="btn" onclick="nextPart(3)">Tiếp Theo: Phần 3 ➡️</button>
+        </div>
+        <button class="btn btn-secondary" onclick="prevPart(1)">⬅️ Quay lại Phần 1</button>
+    </div>
+
+    <!-- SCREEN 4: PART 3 -->
+    <div class="screen" id="screen-part3">
+        <h2>📝 PHẦN 3: ĐIỀN TỪ VÀO CHỖ TRỐNG (21 - 30)</h2>
+        <p style="margin-bottom: 15px; color: var(--text-muted);">Chọn từ thích hợp từ danh sách để hoàn thành câu:</p>
+        <div id="part3-questions"></div>
+        <div class="btn-group">
+            <button class="btn btn-check" onclick="checkPart(3)">🔍 Kiểm tra đúng/sai</button>
+            <button class="btn" onclick="nextPart(4)">Tiếp Theo: Phần 4 ➡️</button>
+        </div>
+        <button class="btn btn-secondary" onclick="prevPart(2)">⬅️ Quay lại Phần 2</button>
+    </div>
+
+    <!-- SCREEN 5: PART 4 -->
+    <div class="screen" id="screen-part4">
+        <h2>📝 PHẦN 4: THỬ THÁCH TRÍ NHỚ (31 - 50)</h2>
+        <p style="margin-bottom: 15px; color: var(--text-muted);">Gõ chính xác từ tiếng Anh tương ứng (Chú ý gợi ý độ dài ký tự):</p>
+        <div id="part4-questions"></div>
+        <div class="btn-group">
+            <button class="btn btn-check" onclick="checkPart(4)">🔍 Kiểm tra đúng/sai</button>
+            <button class="btn" style="background-color: var(--secondary);" onclick="finishGame()">Nộp Bài Hoàn Thành 🏁</button>
+        </div>
+        <button class="btn btn-secondary" onclick="prevPart(3)">⬅️ Quay lại Phần 3</button>
+    </div>
+
+    <!-- SCREEN 6: RESULTS SCREEN -->
+    <div class="screen" id="screen-result">
+        <div class="result-header">
+            <h1>🎉 KẾT QUẢ ÔN TẬP 🎉</h1>
+            <p id="result-user-name" style="font-size: 18px; font-weight: 600; margin-top: 5px; color: var(--primary);"></p>
+        </div>
+        
+        <div class="score-circle">
+            <div id="total-score">0</div>
+            <span>/ 50 Câu</span>
+        </div>
+
+        <div id="score-breakdown" style="margin-bottom: 25px;">
+            <!-- Breakdown dynamically injected -->
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn" style="background-color: var(--secondary);" onclick="downloadCertificate()">📥 Tải Ảnh Kết Quả Về Máy</button>
+            <button class="btn btn-check" onclick="reviewGame()">👀 Xem Lại Bài</button>
+            <button class="btn btn-secondary" onclick="restartGame()">🔄 Làm Lại Bài Tập</button>
+        </div>
+    </div>
+</div>
+
+<!-- Canvas ẩn để tạo ảnh chứng nhận kết quả -->
+<canvas id="certificate-canvas" width="800" height="600"></canvas>
+
+<script>
+    // GAME DATA
+    const dataPart1 = [
+        { q: '1. "innovative" (adj)', options: ['Lỗi thời', 'Sáng tạo, đổi mới', 'Phức tạp', 'Chậm chạp'], ans: 1 },
+        { q: '2. "merger" (n)', options: ['Sự sáp nhập', 'Nhà thầu', 'Bản thảo', 'Tiền lương'], ans: 0 },
+        { q: '3. "inclement weather" (n phrase)', options: ['Mùa màng bội thu', 'Thời tiết khắc nghiệt', 'Không khí trong lành', 'Dự báo thời tiết'], ans: 1 },
+        { q: '4. "commend" (v)', options: ['Bắt đầu', 'Khen ngợi, tán dương', 'Phàn nàn', 'Đề nghị'], ans: 1 },
+        { q: '5. "manuscript" (n)', options: ['Bản thảo', 'Nhà cung cấp', 'Lô hàng', 'Gian hàng'], ans: 0 },
+        { q: '6. "commercial" (n)', options: ['Sự tranh luận', 'Ủy ban', 'Đoạn quảng cáo (TV/Radio)', 'Thiết bị gia dụng'], ans: 2 },
+        { q: '7. "contractor" (n)', options: ['Thẩm phán', 'Người đại diện', 'Nhà thầu', 'Lính mới'], ans: 2 },
+        { q: '8. "booth" (n)', options: ['Gian hàng, quầy', 'Hội chợ', 'Phí đăng ký', 'Hậu quả'], ans: 0 },
+        { q: '9. "wage" (n)', options: ['Tiền lãi', 'Tiền lương (trả theo giờ/ngày)', 'Thuế', 'Hóa đơn'], ans: 1 },
+        { q: '10. "consequence" (n)', options: ['Sự đàm phán', 'Sự định hướng', 'Hậu quả, kết quả', 'Quyết định'], ans: 2 }
+    ];
+
+    const dataPart2 = [
+        { id: 11, word: '11. conducive (adj)', ans: 'C' },
+        { id: 12, word: '12. appliance (n)', ans: 'A' },
+        { id: 13, word: '13. representative (n)', ans: 'G' },
+        { id: 14, word: '14. vendor (n)', ans: 'F' },
+        { id: 15, word: '15. exceptional (adj)', ans: 'H' },
+        { id: 16, word: '16. convincing (adj)', ans: 'D' },
+        { id: 17, word: '17. reputable organization (n phrase)', ans: 'E' },
+        { id: 18, word: '18. inquisitive nature (n phrase)', ans: 'B' },
+        { id: 19, word: '19. medical apparel (n phrase)', ans: 'J' },
+        { id: 20, word: '20. shipping method (n phrase)', ans: 'I' }
+    ];
+
+    const part2Options = [
+        { val: 'A', text: 'A. Thiết bị (gia dụng)' },
+        { val: 'B', text: 'B. Bản tính tò mò, ham học hỏi' },
+        { val: 'C', text: 'C. Có ích, thuận lợi cho' },
+        { val: 'D', text: 'D. Có sức thuyết phục' },
+        { val: 'E', text: 'E. Tổ chức có uy tín' },
+        { val: 'F', text: 'F. Nhà cung cấp, người bán' },
+        { val: 'G', text: 'G. Người đại diện' },
+        { val: 'H', text: 'H. Xuất chúng, đặc biệt' },
+        { val: 'I', text: 'I. Phương thức vận chuyển' },
+        { val: 'J', text: 'J. Trang phục y tế' }
+    ];
+
+    const dataPart3 = [
+        { id: 21, textBefore: "21. Please read the contract ", textAfter: " before you sign it. (Một cách kỹ lưỡng)", ans: "thoroughly" },
+        { id: 22, textBefore: "22. We need to submit the final report ", textAfter: " Friday. (Trước)", ans: "prior to" },
+        { id: 23, textBefore: "23. The company is planning to expand its products into the ", textAfter: ". (Thị trường nước ngoài)", ans: "overseas market" },
+        { id: 24, textBefore: "24. The ", textAfter: " phase of the project will take about two weeks. (Ban đầu)", ans: "initial" },
+        { id: 25, textBefore: "25. Experts ", textAfter: " that the economy will recover by next year. (Dự đoán)", ans: "predict" },
+        { id: 26, textBefore: "26. The bank offers a very low rate of ", textAfter: " for this loan. (Lãi suất)", ans: "interest" },
+        { id: 27, textBefore: "27. We need to manage our time more ", textAfter: " to meet the deadline. (Một cách hiệu quả)", ans: "effectively" },
+        { id: 28, textBefore: "28. The new ", textAfter: " of laptops has just arrived at the warehouse. (Lô hàng)", ans: "shipment" },
+        { id: 29, textBefore: "29. The board members had a long ", textAfter: " about the new budget. (Sự tranh luận)", ans: "argument" },
+        { id: 30, textBefore: "30. You must agree to every ", textAfter: " in this agreement. (Điều khoản)", ans: "term" }
+    ];
+
+    const part3DropdownWords = ["predict", "prior to", "thoroughly", "interest", "term", "effectively", "argument", "shipment", "initial", "overseas market"];
+
+    const dataPart4 = [
+        { id: 31, vi: "31. Sự bảo tồn, gìn giữ (n)", hint: "p _ _ _ _ _ _ _ _ _ _ (12 ký tự)", ans: "preservation" },
+        { id: 32, vi: "32. Sự định hướng (nhân viên mới) (n)", hint: "o _ _ _ _ _ _ _ _ _ (11 ký tự)", ans: "orientation" },
+        { id: 33, vi: "33. Hội chợ triển lãm (n)", hint: "e _ _ _ (4 ký tự)", ans: "expo" },
+        { id: 34, vi: "34. Chịu trách nhiệm về (v phrase)", hint: "b_ r _ _ _ _ _ _ _ _ _ f _ _", ans: "be responsible for" },
+        { id: 35, vi: "35. Được khuyên nên làm gì (v phrase)", hint: "b_ a _ _ _ _ _ _ t_", ans: "be advised to" },
+        { id: 36, vi: "36. Sự đàm phán, thương lượng (n)", hint: "n _ _ _ _ _ _ _ _ _ _ (11 ký tự)", ans: "negotiation" },
+        { id: 37, vi: "37. Phí đăng ký (n phrase)", hint: "r _ _ _ _ _ _ _ _ _ _ f _ _", ans: "registration fee" },
+        { id: 38, vi: "38. Thành viên xuất sắc/thành tựu (n phrase)", hint: "a _ _ _ _ _ _ _ _ _ _ _ m _ _ _ _ _", ans: "accomplished member" },
+        { id: 39, vi: "39. Quy cho, cho là do (v)", hint: "a _ _ _ _ _ _ _ (9 ký tự)", ans: "attribute" },
+        { id: 40, vi: "40. Thẩm phán, giám khảo (n)", hint: "j _ _ _ _ (5 ký tự)", ans: "judge" },
+        { id: 41, vi: "41. Thừa nhận, nhận vào (v)", hint: "a _ _ _ _ (5 ký tự)", ans: "admit" },
+        { id: 42, vi: "42. Sự xem lại, bản chỉnh sửa (n)", hint: "r _ _ _ _ _ _ _ (8 ký tự)", ans: "revision" },
+        { id: 43, vi: "43. Lính mới, tuyển dụng (n, v)", hint: "r _ _ _ _ _ _ (7 ký tự)", ans: "recruit" },
+        { id: 44, vi: "44. Thúc đẩy, tạo động lực (v)", hint: "m _ _ _ _ _ _ _ (8 ký tự)", ans: "motivate" },
+        { id: 45, vi: "45. Ủy ban, hội đồng (n)", hint: "c _ _ _ _ _ _ _ _ (9 ký tự)", ans: "committee" },
+        { id: 46, vi: "46. Chắc chắn, nhất định (adj)", hint: "c _ _ _ _ _ _ (7 ký tự)", ans: "certain" },
+        { id: 47, vi: "47. Sự đưa tin của báo chí (n phrase)", hint: "p _ _ _ _ c _ _ _ _ _ _ _", ans: "press coverage" },
+        { id: 48, vi: "48. Phụ thuộc vào (v)", hint: "d _ _ _ _ o _", ans: "depend on" },
+        { id: 49, vi: "49. Sự lắp ráp, cuộc họp (n)", hint: "a _ _ _ _ _ _ _ (8 ký tự)", ans: "assembly" },
+        { id: 50, vi: "50. Quyết định tuyển dụng (n phrase)", hint: "h _ _ _ _ _ d _ _ _ _ _ _ _", ans: "hiring decision" }
+    ];
+
+    let username = "";
+    let score1 = 0, score2 = 0, score3 = 0, score4 = 0;
+
+    // INITIALIZATION
+    window.onload = function() {
+        renderPart1();
+        renderPart2();
+        renderPart3();
+        renderPart4();
+    };
+
+    function setProgressBar(percentage) {
+        document.getElementById('game-progress').style.width = percentage + '%';
+    }
+
+    function startGame() {
+        const nameInput = document.getElementById('student-name').value.trim();
+        if(!nameInput) {
+            alert('Vui lòng nhập tên của bạn trước khi bắt đầu bài tập!');
+            return;
+        }
+        username = nameInput;
+        document.getElementById('screen-start').classList.remove('active');
+        document.getElementById('screen-part1').classList.add('active');
+        document.getElementById('progress-container').style.display = 'block';
+        setProgressBar(25);
+    }
+
+    function nextPart(partNum) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen-part' + partNum).classList.add('active');
+        setProgressBar(partNum * 25);
+        window.scrollTo(0, 0);
+    }
+
+    function prevPart(partNum) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen-part' + partNum).classList.add('active');
+        setProgressBar(partNum * 25);
+        window.scrollTo(0, 0);
+    }
+
+    // CHECKING LOGIC
+    function checkPart(partNum) {
+        if (partNum === 1) {
+            dataPart1.forEach((q, idx) => {
+                // Clear old highlights
+                document.querySelectorAll(`input[name="part1-q-${idx}"]`).forEach(radio => {
+                    radio.parentElement.classList.remove('correct-item', 'incorrect-item');
+                });
+                const selected = document.querySelector(`input[name="part1-q-${idx}"]:checked`);
+                if(selected) {
+                    if(parseInt(selected.value) === q.ans) {
+                        selected.parentElement.classList.add('correct-item');
+                    } else {
+                        selected.parentElement.classList.add('incorrect-item');
+                    }
+                }
+            });
+        } else if (partNum === 2) {
+            dataPart2.forEach((item) => {
+                const select = document.querySelector(`select[name="part2-q-${item.id}"]`);
+                select.classList.remove('correct-item', 'incorrect-item');
+                if(select.value) {
+                    if(select.value === item.ans) {
+                        select.classList.add('correct-item');
+                    } else {
+                        select.classList.add('incorrect-item');
+                    }
+                }
+            });
+        } else if (partNum === 3) {
+            dataPart3.forEach((item) => {
+                const select = document.querySelector(`select[name="part3-q-${item.id}"]`);
+                select.classList.remove('correct-item', 'incorrect-item');
+                if(select.value) {
+                    if(select.value === item.ans) {
+                        select.classList.add('correct-item');
+                    } else {
+                        select.classList.add('incorrect-item');
+                    }
+                }
+            });
+        } else if (partNum === 4) {
+            dataPart4.forEach((item) => {
+                const input = document.querySelector(`input[name="part4-q-${item.id}"]`);
+                input.classList.remove('correct-item', 'incorrect-item');
+                const typed = input.value.trim().toLowerCase();
+                if(typed) {
+                    if(typed === item.ans.toLowerCase()) {
+                        input.classList.add('correct-item');
+                    } else {
+                        input.classList.add('incorrect-item');
+                    }
+                }
+            });
+        }
+    }
+
+    function reviewGame() {
+        // Run check on all parts to highlight them
+        checkPart(1);
+        checkPart(2);
+        checkPart(3);
+        checkPart(4);
+
+        // Go back to part 1
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen-part1').classList.add('active');
+        setProgressBar(25);
+        window.scrollTo(0, 0);
+    }
+
+    // RENDER FUNCTIONS
+    function renderPart1() {
+        const container = document.getElementById('part1-questions');
+        let html = '';
+        dataPart1.forEach((q, idx) => {
+            html += `
+                <div class="question-card">
+                    <div class="question-text">${q.q}</div>
+                    <div class="options-grid">
+            `;
+            q.options.forEach((opt, oIdx) => {
+                html += `
+                    <label class="option-label">
+                        <input type="radio" name="part1-q-${idx}" value="${oIdx}">
+                        ${String.fromCharCode(65 + oIdx)}. ${opt}
+                    </label>
+                `;
+            });
+            html += `</div></div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderPart2() {
+        const container = document.getElementById('part2-questions');
+        let html = '';
+        dataPart2.forEach((item) => {
+            html += `
+                <div class="matching-row">
+                    <div class="matching-word">${item.word}</div>
+                    <div>
+                        <select name="part2-q-${item.id}">
+                            <option value="">-- Chọn ý nghĩa --</option>
+            `;
+            part2Options.forEach(opt => {
+                html += `<option value="${opt.val}">${opt.text}</option>`;
+            });
+            html += `
+                        </select>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderPart3() {
+        const container = document.getElementById('part3-questions');
+        let html = '';
+        dataPart3.forEach((item) => {
+            html += `
+                <div class="blank-sentence">
+                    ${item.textBefore}
+                    <select class="inline-select" name="part3-q-${item.id}">
+                        <option value="">......</option>
+            `;
+            part3DropdownWords.forEach(w => {
+                html += `<option value="${w}">${w}</option>`;
+            });
+            html += `
+                    </select>
+                    ${item.textAfter}
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderPart4() {
+        const container = document.getElementById('part4-questions');
+        let html = '';
+        dataPart4.forEach((item) => {
+            html += `
+                <div class="recall-row">
+                    <div class="recall-vietnamese">${item.vi}</div>
+                    <div class="recall-hint">${item.hint}</div>
+                    <input type="text" name="part4-q-${item.id}" placeholder="Nhập từ tiếng Anh..." style="padding: 10px; border-radius: 6px;">
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    // SCORING LOGIC
+    function finishGame() {
+        // Run checks so inputs are highlighted just in case
+        checkPart(1); checkPart(2); checkPart(3); checkPart(4);
+
+        score1 = 0;
+        dataPart1.forEach((q, idx) => {
+            const selected = document.querySelector(`input[name="part1-q-${idx}"]:checked`);
+            if(selected && parseInt(selected.value) === q.ans) score1++;
+        });
+
+        score2 = 0;
+        dataPart2.forEach((item) => {
+            const selected = document.querySelector(`select[name="part2-q-${item.id}"]`);
+            if(selected && selected.value === item.ans) score2++;
+        });
+
+        score3 = 0;
+        dataPart3.forEach((item) => {
+            const selected = document.querySelector(`select[name="part3-q-${item.id}"]`);
+            if(selected && selected.value === item.ans) score3++;
+        });
+
+        score4 = 0;
+        dataPart4.forEach((item) => {
+            const typed = document.querySelector(`input[name="part4-q-${item.id}"]`).value.trim().toLowerCase();
+            if(typed === item.ans.toLowerCase()) score4++;
+        });
+
+        const total = score1 + score2 + score3 + score4;
+
+        // Display results
+        document.getElementById('result-user-name').innerText = "Học viên: " + username;
+        document.getElementById('total-score').innerText = total;
+
+        document.getElementById('score-breakdown').innerHTML = `
+            <div class="breakdown-item"><strong>Phần 1: Trắc nghiệm khách quan</strong> <span>${score1} / 10</span></div>
+            <div class="breakdown-item"><strong>Phần 2: Ghép nối cặp từ kép</strong> <span>${score2} / 10</span></div>
+            <div class="breakdown-item"><strong>Phần 3: Điền từ vào ngữ cảnh</strong> <span>${score3} / 10</span></div>
+            <div class="breakdown-item"><strong>Phần 4: Thử thách viết nhớ từ</strong> <span>${score4} / 20</span></div>
+        `;
+
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen-result').classList.add('active');
+        document.getElementById('progress-container').style.display = 'none';
+        window.scrollTo(0, 0);
+    }
+
+    function restartGame() {
+        document.getElementById('student-name').value = '';
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen-start').classList.add('active');
+        document.getElementById('progress-container').style.display = 'none';
+        
+        renderPart1();
+        renderPart2();
+        renderPart3();
+        renderPart4();
+    }
+
+    // CANVAS CERTIFICATE GENERATOR
+    function downloadCertificate() {
+        const canvas = document.getElementById('certificate-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Draw background
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, 800, 600);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(20, 20, 760, 560);
+
+        // Borders
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(30, 30, 740, 540);
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(35, 35, 730, 530);
+
+        // Text
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#1d4ed8';
+        ctx.font = 'bold 32px Georgia, serif';
+        ctx.fillText('CHỨNG NHẬN HOÀN THÀNH', 400, 100);
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = 'italic 16px sans-serif';
+        ctx.fillText('Thử thách 50 Từ vựng TOEIC Cốt lõi', 400, 135);
+
+        ctx.fillStyle = '#1e293b';
+        ctx.font = 'bold 28px sans-serif';
+        ctx.fillText(username.toUpperCase(), 400, 210);
+        
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(250, 230);
+        ctx.lineTo(550, 230);
+        ctx.stroke();
+
+        ctx.fillStyle = '#334155';
+        ctx.font = '16px sans-serif';
+        ctx.fillText('Đã hoàn thành xuất sắc canvas ôn tập từ vựng với thành tích:', 400, 270);
+
+        const total = score1 + score2 + score3 + score4;
+        ctx.fillStyle = '#10b981';
+        ctx.font = 'bold 64px sans-serif';
+        ctx.fillText(total + ' / 50', 400, 360);
+        
+        ctx.fillStyle = '#64748b';
+        ctx.font = '14px sans-serif';
+        ctx.fillText('Tổng điểm đạt được', 400, 390);
+
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#475569';
+        ctx.font = '15px sans-serif';
+        ctx.fillText('• Phần 1 (Trắc nghiệm): ' + score1 + '/10', 120, 450);
+        ctx.fillText('• Phần 2 (Nối từ kép): ' + score2 + '/10', 120, 480);
+        ctx.fillText('• Phần 3 (Điền chỗ trống): ' + score3 + '/10', 460, 450);
+        ctx.fillText('• Phần 4 (Thử thách trí nhớ): ' + score4 + '/20', 460, 480);
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '13px sans-serif';
+        const today = new Date();
+        const dateStr = today.getDate() + '/' + (today.getMonth()+1) + '/' + today.getFullYear();
+        ctx.fillText('Ngày hoàn thành: ' + dateStr + ' | Hệ thống Canvas TOEIC Online', 400, 540);
+
+        // Download
+        const imageURI = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `TOEIC_Result_${username.replace(/\s+/g, '_')}.png`;
+        link.href = imageURI;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>
